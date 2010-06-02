@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Make PDF Newspaper
-Plugin URI: http://www.rsc-ne-scotland.org.uk/mashe/make-pdf-newspaper-plugin/
+Plugin URI: http://www.rsc-ne-scotland.org.uk/mashe/wordpress-plugins/make-pdf-newspaper-2/
 Description: 'Make PDF Newspaper' uses a self-hosted version of Five Filters PDF Newspaper to create printer friendly 'tabloid' edition of your Wordpress blog.  
 Author: Martin Hawksey
 Author URI: http://www.rsc-ne-scotland.org.uk/mashe
