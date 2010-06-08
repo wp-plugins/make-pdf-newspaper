@@ -27,15 +27,14 @@ border-right:1px dashed #cccccc;
 <div class="wrap">
 <h2>Make PDF Newspaper </h2>
 <div class="box">
-  <h3>Intructions</h3>
+  <h3>Instructions</h3>
   <ol>
     <li>Customise your PDF newspaper using the options below</li>
-    <li>Everytime you make a post or want to remake your publication hit 'Remake PDF' - Making the PDF can take upto 60 seconds</li>
+    <li>Every time you make a post or want to remake your publication hit 'Remake PDF' - Making the PDF can take up to 60 seconds</li>
   </ol>
   <p>(I did consider automatically remaking the PDF after each new post but as it is a server intensive process I thought it better to give user control) </p>
 </div>
 <h3>Options</h3>
-<div class="gdsr">
   <form method="post">
     <?php if ( function_exists('wp_nonce_field') )
 			wp_nonce_field('mpn-1', 'mpn-main');
@@ -66,7 +65,7 @@ border-right:1px dashed #cccccc;
         <tr>
           <th scope="row">Include post images </th>
           <td align="left"><label for="mpn_images">Include images:</label>
-          <input name="mpn_images" type="checkbox" value="1" <?php if ($options['mpn_images'] == 1) echo "checked";?> /></td>
+            <input name="mpn_images" type="checkbox" value="1" <?php if ($options['mpn_images'] == 1) echo "checked";?> /></td>
         </tr>
         <tr>
           <th scope="row">URL footnote/shortening</th>
@@ -128,11 +127,21 @@ border-right:1px dashed #cccccc;
             Select a category used to identify your cover page:
             <?php 
                         $dropdown_options = array('show_option_all' => '', 'hide_empty' => 0, 'hierarchical' => 1,
-                            'show_count' => 0, 'depth' => 0, 'orderby' => 'ID', 'selected' => $options["mpn_digest_category"], 'name' => 'mpn_digest_category');
+                            'show_count' => 0, 'depth' => 0, 'orderby' => 'name', 'selected' => $options["mpn_digest_category"], 'name' => 'mpn_digest_category');
                         wp_dropdown_categories($dropdown_options);
                     ?>
             <br>
             - Our organisation creates a fortnightly newsletter. This contains a cover page which is assigned its own category, containing links to posts that have been made in the last 2 weeks. Enabling digest allows us to create a pdf which contains the cover page and all the posts made between it and the last cover page. <a href="http://scottish-rscs.org.uk/newsfeed/" target="_blank">Visit the example at RSC NewsFeed </a></td>
+        </tr>
+        <tr>
+          <th scope="row">Use external service </th>
+          <td>If you are experiencing problems using the internal PDF engine it is possible to use an external hosting of the FiveFilters PDF Newspaper by enter the location below of the FiveFilters Engine (some settings like subtitle and banner image may not necessarily work and depends on how the external engine has been configured). To use FiveFilters own hosting of the engine enter http://fivefilters.org/pdf-newspaper/makepdf.php:<br>
+&nbsp;&nbsp;Engine URL :
+            <input name="mpn_engine_url" type="text" id="mpn_engine_url" value="<?php echo $options['mpn_engine_url']; ?>" size="60">
+            <br>
+&nbsp;&nbsp;Optional parameters :
+            <input name="mpn_engine_para" type="text" id="mpn_engine_para" value="<?php echo $options['mpn_engine_para']; ?>" size="60">
+          </td>
         </tr>
         <tr>
           <th scope="row"></th>
@@ -146,4 +155,43 @@ border-right:1px dashed #cccccc;
       </tbody>
     </table>
   </form>
-</div>
+  <h3>Build PDF for categories </h3>
+    <form method="post">
+    <?php if ( function_exists('wp_nonce_field') )
+			wp_nonce_field('mpn-2', 'mpn-make');
+			?>
+    <input type="hidden" name="mpn_action" value="make" />
+  <table>
+    <tbody>
+      <tr>
+        <th scope="row">Select category </th>
+        <td align="left"><?php 
+                        $dropdown_options = array('show_option_all' => '', 'hide_empty' => 0, 'hierarchical' => 1,
+                            'show_count' => 1, 'depth' => 0, 'orderby' => 'name', 'name' => 'mpn_custom_build_cat');
+                        wp_dropdown_categories($dropdown_options);
+                    ?>
+          <span class="submit">
+          <input class="inputbutton" type="submit" value="Go" name="makepdfcat" />
+        </span></td>
+      </tr>
+      <tr>
+        <th scope="row">or</th>
+        <td align="left">&nbsp;</td>
+      </tr>
+      <tr>
+        <th scope="row">Enter URL </th>
+        <td align="left"><input name="mpn_title" type="text" id="mpn_custom_build_url" size="40">
+          <span class="submit">
+          <input class="inputbutton" type="submit" value="Go" name="makepdfurl" /></span>
+          <br>
+          (e.g. http://yourblog.url/2010/03/)</td>
+      </tr>
+      <tr>
+        <th scope="row">&nbsp;</th>
+        <td align="left"><span class="submit">
+        </span></td>
+      </tr>
+    </tbody>
+  </table>
+  </form>
+  <p>&nbsp;</p>

@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: Make PDF Newspaper
-Plugin URI: http://www.rsc-ne-scotland.org.uk/mashe/wordpress-plugins/make-pdf-newspaper-2/
-Description: 'Make PDF Newspaper' uses a self-hosted version of Five Filters PDF Newspaper to create printer friendly 'tabloid' edition of your Wordpress blog.  
+Plugin URI: http://www.rsc-ne-scotland.org.uk/mashe/make-pdf-newspaper-plugin/
+Description: This plugin uses the FiveFilters.org RSS to PDF Newspaper engine to create printer friendly 'tabloid' edition of your latest posts. You can add a link to your &quot;Tabloid&quot edition as a widget or by adding <code>&lt;?php do_makePDFNewspaper('linkName','fileName', showThumbnail, 'bannerText'); ?&gt; </code> in your template (for an explanation of these see the readme file).  
 Author: Martin Hawksey
 Author URI: http://www.rsc-ne-scotland.org.uk/mashe
-Version: 2.0.0
+Version: 2.0.1
 */
 
 
@@ -53,7 +53,9 @@ if (!class_exists('MakePDFNewspaper')) {
 			'mpn_thumb_key' => '',
 			'mpn_order' => '',
 			'mpn_digest' => 0,
-			'mpn_digest_category' => ''
+			'mpn_digest_category' => '',
+			'mpn_engine_url' => '',
+			'mpn_engine_para' => ''
 		  );
           function MakePDFNewspaper()
           {
@@ -122,6 +124,8 @@ if (!class_exists('MakePDFNewspaper')) {
 				  $this->o['mpn_thumb_key'] = $_POST['mpn_thumb_key'];
 				  $this->o['mpn_digest'] = isset($_POST['mpn_digest']) ? 1 : 0;
 				  $this->o['mpn_digest_category'] = $_POST['mpn_digest_category'];
+				  $this->o['mpn_engine_url'] = $_POST['mpn_engine_url'];
+				  $this->o['mpn_engine_para'] = $_POST['mpn_engine_para'];
 				  if (isset($_POST['reset'])){
 				    $this->o = $this->default_options;
 					$this->status .= "Reset<br/><br/>";
@@ -129,6 +133,22 @@ if (!class_exists('MakePDFNewspaper')) {
 				  update_option('make-pdf-newspaper-options', $this->o);
 				  $this->status .= "Settings saved"; 
               }
+			  if ($_POST['mpn_action'] == 'make') {
+                  check_admin_referer('mpn-2', 'mpn-make');
+				  if ($_POST['makepdfcat'] =="Go"){
+				  	$catID = $_POST['mpn_custom_build_cat'];
+					$catFeed = get_category_link( $catID );
+				  } elseif ($_POST['makepdfurl'] =="Go") {
+				  	$catFeed = $_POST['mpn_custom_build_url'];
+				  } else {
+				    $this->status .= "Error: No category or url specified";
+				  }
+				  $catFeed = str_replace(get_bloginfo( 'wpurl' ),"",$catFeed);
+				  $rebuild = true;
+  				  include('makepdf.php' );
+  				  $linkString = str_replace("%LINKTEXT%", "Custom PDF link", $linkString);
+				  $this->status .= $linkString ." The link above can be used anywhere you like.";
+			  }
 		  } 
    }//End Class MakePDFNewspaper
    

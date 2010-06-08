@@ -4,9 +4,9 @@ Donate link: http://fivefilters.org/pdf-newspaper/#donate
 Tags: newsletter, tabloid, printable, pdf, newspaper, magazine, tcpdf
 Requires at least: 2.5
 Tested up to: 2.9.2
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 
-'Make PDF Newspaper' uses a self-hosted version of Five Filters PDF Newspaper to create printer friendly 'tabloid' edition of your Wordpress blog.
+'Make PDF Newspaper' uses Five Filters PDF Newspaper to create printer friendly 'tabloid' edition of your Wordpress blog.
 
 == Description ==
 
@@ -16,6 +16,8 @@ The plugin includes a widget to let you control how you advertise your 'tabloid 
 
 **Key features**
 
+* **NEW** Option to generate PDF from externally hosted versions of the Five Filters code
+* **NEW** Option to generate PDF editions of selected categories or archives
 * PDF generation entirely self-hosted removing reliance on 3rd party services and making it suitable for Intranet installations of WordPress
 * Option to include QR codes for each post
 * Customisable banner text and logo
@@ -53,7 +55,11 @@ If you get permission errors make sure that the script has writing rights in you
 
 = I get a Error 500 - Internal server error =
 
-TThis usually indicates that your server has timed out because the PDF it is trying to create is too big. Disabling link footnotes and QR Code generation may help.
+This usually indicates that your server has timed out because the PDF it is trying to create is too big. Disabling link footnotes and QR Code generation may help.
+
+= Warning: curl_setopt() [function.curl-setopt]: CURLOPT_FOLLOWLOCATION cannot be activated when in safe_mode or an open_basedir error =
+
+This is indicates that your host server isn't configured to run this plugin. You can contact your host to see if they can help or consider setting the 'Use external service' option within the plugin
 
 
 == Screenshots ==
@@ -65,5 +71,7 @@ TThis usually indicates that your server has timed out because the PDF it is try
 If you used the Make Tabbloid plugin this must be deactivated before installing Make PDF Newspaper.  
 
 == Changelog ==
+
+**2.0.1** - Added option to generate PDF from external host of FiveFilters PDF engine and to generate separate PDFs for categories and archives. Fixed some other bugs with PDF and thumbnail generation.
 
 **2.0.0** - Initial Release

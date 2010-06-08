@@ -40,13 +40,13 @@ function getImageData($url){
 	return $data;
 }
 
-function makeThumb($pdfURL){
+function makeThumb($pdfURL, $thumbName){
 		$o = get_option('make-pdf-newspaper-options');
 		$hash = md5(gmdate("Ymd").$pdfURL.$o['mpn_thumb_key']);
 		$url = "http://webthumb.bluga.net/easythumb.php?user=".$o['mpn_thumb_id']."&url=".$pdfURL."&hash=".$hash."&size=medium&cache=1";
 		$data = getImageData($url);
 		if($data==''){trigger_error('Remote source didn\'t return any data.',E_USER_ERROR);die;}
-		file_put_contents(WP_CONTENT_DIR."/pdf/thumbnail.jpg",$data);
+		file_put_contents(WP_CONTENT_DIR.$thumbName,$data);
 }
 // add wordpress functions
 if (isset($_GET['action'])){
@@ -54,8 +54,7 @@ if (isset($_GET['action'])){
 }
 $o = get_option('make-pdf-newspaper-options');
 
-// Check for feed URL
-$url = $_GET['feed'];
+//Collect 
 if ($_GET['action'] == "rebuild"){
 	$rebuild = true; 
 }
@@ -74,31 +73,37 @@ if ($get_images) {
 	$max_strlen = 100000;
 }
 
-// Check for cached copy
-if ($url !="") $url = "-".$url;
-$url = str_replace("/","-",$url);
-$ext = '/pdf/'.$o['mpn_filename'].$url.'.pdf';
+// Check for feed URL
+$url = $catFeed;
+if ($url !="") $catExt = "-".$url;
+$catExt = str_replace("/","-",$catExt);
+$catExt = rtrim($catExt,"-");
+$ext = '/pdf/'.$o['mpn_filename'].$catExt.'.pdf';
+$thumbName= '/pdf/'.$o['mpn_filename'].$catExt.'.jpg';
 $output_file = WP_CONTENT_DIR.$ext;
 $pdfURL = WP_CONTENT_URL.$ext;
 
 if (file_exists($output_file)) {
-	$output_mtime = filemtime($output_file);
-	$post_mtime = get_lastpostmodified();
-	if (($output_mtime - $post_mtime)<0){
-		$rebuild = true; 
-	} else {
-		if ($o['mpn_thumb_id']!="" && file_exists(WP_CONTENT_DIR."/pdf/thumbnail.jpg")){
-			$thumbsize = filesize(WP_CONTENT_DIR."/pdf/thumbnail.jpg");
-			if ($thumbsize<60){
-				makeThumb($pdfURL);
-			} else {
-				$previewHTML = "<div style=\"font-size:80%; font-style:italic;\" align=\"center\"><a href=\"".$pdfURL."\" target=\"_blank\" ><img src=\"".WP_CONTENT_URL."/pdf/thumbnail.jpg\" width=\"160\" height=\"226\"/></a><br/>Preview powered by:<br/><a href=\"http://webthumb.bluga.net/\" target=\"_blank\">Bluga.net Webthumb</a></div>";
+		if ($o['mpn_thumb_id']!=""){
+			if (!file_exists(WP_CONTENT_DIR.$thumbName) || (filesize(WP_CONTENT_DIR.$thumbName))<60){
+			//$thumbsize = filesize(WP_CONTENT_DIR.$thumbName);
+			//if ($thumbsize<60){
+				makeThumb($pdfURL,$thumbName);
+			} 
+			if ((filesize(WP_CONTENT_DIR.$thumbName))>60){
+				$previewHTML = "<div style=\"font-size:80%; font-style:italic;\" align=\"center\"><a href=\"".$pdfURL."\" target=\"_blank\" ><img src=\"".WP_CONTENT_URL.$thumbName."\" width=\"160\" height=\"226\"/></a><br/>Preview powered by:<br/><a href=\"http://webthumb.bluga.net/\" target=\"_blank\">Bluga.net Webthumb</a></div>";
 			}
 		}
 		$linkString = "<a href=\"".$pdfURL."\" target=\"_blank\" >%LINKTEXT%</a>".$previewHTML;
-	}
 } 
 if (!(file_exists($output_file)) || $rebuild) {
+ if($o['mpn_engine_url']!=""){
+ 	if ($get_images) $imageStr = "true";
+ 	$extURL = $o['mpn_engine_url']."?feed=".get_bloginfo( 'wpurl' ).$catFeed.urlencode("?feed=make-pdf-newspaper")."&title=".urlencode($o['mpn_title'])."&sub=".urlencode($o['mpn_subtitle'])."&order=".$order."&images=".$imageStr.$o['mpn_engine_para'];
+	$data = getImageData($extURL);
+	if($data==''){trigger_error('Remote source didn\'t return any data.',E_USER_ERROR);die;}
+	file_put_contents($output_file,$data);
+ } else { 
 	if(! class_exists('SimplePie'))
 		require_once('libraries/simplepie/simplepie.inc');
 	require_once('SimplePie_Chronological.php');
@@ -118,7 +123,7 @@ if (!(file_exists($output_file)) || $rebuild) {
 	} else {
 		$feed = new SimplePie();
 	}
-	$feed->set_feed_url(get_bloginfo( 'wpurl' ).$_GET['feed'].'?feed=make-pdf-newspaper');
+	$feed->set_feed_url(get_bloginfo( 'wpurl' ).$url.'?feed=make-pdf-newspaper');
 	$feed->set_timeout(180);
 	$feed->enable_cache(false);
 	$feed->set_stupidly_fast(true);
@@ -258,16 +263,15 @@ if (!(file_exists($output_file)) || $rebuild) {
 	$pdf->makePdf();
 	// output PDF
 	$pdf->Output($output_file, 'F');
-	if ($o['mpn_thumb_id']!=""){
-		makeThumb($pdfURL);
-		if (filesize(WP_CONTENT_DIR."/pdf/thumbnail.jpg")>60)
-		$previewHTML = "<div style=\"font-size:80%; font-style:italic;\" align=\"center\"><a href=\"".$pdfURL."\" target=\"_blank\" ><img src=\"".WP_CONTENT_URL."/pdf/thumbnail.jpg\" width=\"160\" height=\"226\"/></a><br/>Preview powered by:<br/><a href=\"http://webthumb.bluga.net/\" target=\"_blank\">Bluga.net Webthumb</a></div>";
-	}
-	$linkString = "<a href=\"".$pdfURL."\" target=\"_blank\" >%LINKTEXT%</a>".$previewHTML;
-	
+ }
+ if ($o['mpn_thumb_id']!=""){
+		makeThumb($pdfURL,$thumbName);
+		if (filesize(WP_CONTENT_DIR.$thumbName)>60)
+		$previewHTML = "<div style=\"font-size:80%; font-style:italic;\" align=\"center\"><a href=\"".$pdfURL."\" target=\"_blank\" ><img src=\"".WP_CONTENT_URL.$thumbName."\" width=\"160\" height=\"226\"/></a><br/>Preview powered by:<br/><a href=\"http://webthumb.bluga.net/\" target=\"_blank\">Bluga.net Webthumb</a></div>";
+ }
+ $linkString = "<a href=\"".$pdfURL."\" target=\"_blank\" >%LINKTEXT%</a>".$previewHTML;
 }
-if ($_GET['action']=="test" || $_GET['action']=="rebuild" || $_GET['action']=="output"){
+if ($_GET['action']=="test" || $_GET['action']=="rebuild"){
 	header('Location: '.$pdfURL);
 } 
-if ($_GET['action']=="link") echo $linkString;
 ?>
