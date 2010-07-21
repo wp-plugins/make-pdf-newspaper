@@ -24,6 +24,37 @@ border-right:1px dashed #cccccc;
 }
 
 </style>
+<?php 
+if(isset($options['mpn_key'])&& $options['mpn_key']!="")  {
+	$cronPath = WP_PLUGIN_URL . '/make-pdf-newspaper/makepdf.php?mpn_key='.$options['mpn_key'];
+}
+
+function mpnKey(){
+$s = '<input name="mpn_key" type="hidden" value="';
+if(isset($cronPath)) 
+	$s.= $options['mpn_key']; 
+else 
+	$s .= randKey(16);
+$s .= '" />';
+echo $s;	
+}
+?>
+<script language="javascript">
+var keylist="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789";
+function randKey(amount){
+	randkey='';
+	for (i=0;i<amount;i++)
+		randkey+=keylist.charAt(Math.floor(Math.random()*keylist.length));
+	return randkey;
+}     
+function changeCat(){
+	document.getElementById('croncaturl').innerHTML = '<?php echo $cronPath.'&action=Go&cat=';?>'+document.mpn_catform.cat.value ;
+}  
+function changeArc(){
+	document.getElementById('cronarcurl').innerHTML = '<?php echo $cronPath.'&action=Go&cat=';?>'+document.mpn_arcform.cat.value ;
+}  
+  
+</script>
 <div class="wrap">
 <h2>Make PDF Newspaper </h2>
 <div class="box">
@@ -35,7 +66,7 @@ border-right:1px dashed #cccccc;
   <p>(I did consider automatically remaking the PDF after each new post but as it is a server intensive process I thought it better to give user control) </p>
 </div>
 <h3>Options</h3>
-  <form method="post">
+  <form method="post" name="mpn_form">
     <?php if ( function_exists('wp_nonce_field') )
 			wp_nonce_field('mpn-1', 'mpn-main');
 			?>
@@ -98,7 +129,10 @@ border-right:1px dashed #cccccc;
         <tr>
           <th scope="row">QR codes </th>
           <td align="left"><label for="mpn_qrcodeshow">Include QR code at the end of each entry linking to online post:</label>
-            <input name="mpn_qrcodeshow" type="checkbox" value="1" <?php if ($options['mpn_qrcodeshow'] == 1) echo "checked";?> /></td>
+            <input name="mpn_qrcodeshow" type="checkbox" value="1" <?php if ($options['mpn_qrcodeshow'] == 1) echo "checked";?> />
+            <br />
+            QR Code text (Optional - %POSTURL% is replaced by the full post url): 
+            <textarea name="mpn_qr_text" cols="67" id="mpn_qr_text"><?php echo $options['mpn_qr_text']; ?></textarea></td>
         </tr>
         <tr>
           <th scope="row">Date order </th>
@@ -143,55 +177,66 @@ border-right:1px dashed #cccccc;
             <input name="mpn_engine_para" type="text" id="mpn_engine_para" value="<?php echo $options['mpn_engine_para']; ?>" size="60">
           </td>
         </tr>
+         <tr>
+          <th scope="row">Automatically remake PDF</th>
+          <td>If you would like to automatically remake the pdf the following url can be registered  as  a 'cron job' using your host or a third party web service:<br>
+&nbsp;&nbsp;Cron Job URL :
+            <input name="mpn_cron_url" type="text" id="mpn_cron_url" onclick="select();" value="<?php echo $cronPath.'&action=Go'?>" size="60" />
+           <br />&nbsp;&nbsp;Key:<input name="mpn_key" type="text" id="mpn_key" value="<?php echo $options['mpn_key']; ?>" size="60"> [<a href="javascript:void(0);" onclick="document.mpn_form.mpn_key.value=randKey(32)">Generate new key</a>] </td>
+        </tr>
         <tr>
           <th scope="row"></th>
           <td><span class="submit">
             <input class="inputbutton" type="submit" value="Save settings" name="saving"/>
             <input class="inputbutton" type="submit" value="Reset" name="reset" />
-            <input class="inputbutton" type="button" value="Test PDF" name="makepdf" onClick="window.location='<?php echo WP_PLUGIN_URL . '/make-pdf-newspaper/makepdf.php?action=test'?>'"/>
-            <input class="inputbutton" type="button" value="Remake PDF" name="remakepdf" onClick="window.location='<?php echo WP_PLUGIN_URL . '/make-pdf-newspaper/makepdf.php?action=rebuild'?>'"/>
+            <input class="inputbutton" type="button" value="Test PDF" name="makepdf" onClick="window.location='<?php echo $cronPath.'&action=test';?>'"/>
+            <input class="inputbutton" type="button" value="Remake PDF" name="remakepdf" onClick="window.location='<?php echo $cronPath.'&action=Go';?>'"/>
             </span></td>
         </tr>
       </tbody>
     </table>
   </form>
   <h3>Build PDF for categories </h3>
-    <form method="post">
-    <?php if ( function_exists('wp_nonce_field') )
-			wp_nonce_field('mpn-2', 'mpn-make');
-			?>
-    <input type="hidden" name="mpn_action" value="make" />
+   
   <table>
     <tbody>
       <tr>
         <th scope="row">Select category </th>
-        <td align="left"><?php 
+        <td align="left"> <form method="get" name="mpn_catform" action="<?php echo WP_PLUGIN_URL . '/make-pdf-newspaper/makepdf.php'; ?>">
+				<?php 
                         $dropdown_options = array('show_option_all' => '', 'hide_empty' => 0, 'hierarchical' => 1,
-                            'show_count' => 1, 'depth' => 0, 'orderby' => 'name', 'name' => 'mpn_custom_build_cat');
+                            'show_count' => 1, 'depth' => 0, 'orderby' => 'name');
                         wp_dropdown_categories($dropdown_options);
+						
+						
                     ?>
+                    <input name="mpn_key" type="hidden" id="mpn_key" value="<?php echo $options['mpn_key']; ?>" size="60">
           <span class="submit">
-          <input class="inputbutton" type="submit" value="Go" name="makepdfcat" />
-        </span></td>
+          <input class="inputbutton" type="submit" value="Go" name="action" />
+        </span> [<a href="javascript:void(0);" onclick="changeCat();">Cron url</a>] <br />
+<span id="croncaturl" style="background-color:#CCC;"></span>
+</form></td>
       </tr>
       <tr>
         <th scope="row">or</th>
         <td align="left">&nbsp;</td>
       </tr>
       <tr>
-        <th scope="row">Enter URL </th>
-        <td align="left"><input name="mpn_title" type="text" id="mpn_custom_build_url" size="40">
+        <th scope="row">Enter URL <br />
+(e.g. /2010/03/) </th>
+        <td align="left"><form method="get"  name="mpn_arcform" action="<?php echo WP_PLUGIN_URL . '/make-pdf-newspaper/makepdf.php'; ?>">
+        <input name="cat" type="text" id="cat" size="40">
+        <input name="mpn_key" type="hidden" id="mpn_key" value="<?php echo $options['mpn_key']; ?>" size="60">
           <span class="submit">
-          <input class="inputbutton" type="submit" value="Go" name="makepdfurl" /></span>
-          <br>
-          (e.g. http://yourblog.url/2010/03/)</td>
+          <input class="inputbutton" type="submit" value="Go" name="action" /></span> [<a href="javascript:void(0);" onclick="changeArc();">Cron url</a>] <br />
+<span id="cronarcurl" style="background-color:#CCC;"></span></form>
+          </td>
       </tr>
       <tr>
         <th scope="row">&nbsp;</th>
-        <td align="left"><span class="submit">
-        </span></td>
+        <td align="left">PDFs generated for custom urls and categories are saved in the /wp-content/pdf/ folder and can be linked to using standard hyperlinks</td>
       </tr>
     </tbody>
   </table>
-  </form>
+ 
   <p>&nbsp;</p>

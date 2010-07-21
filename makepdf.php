@@ -58,7 +58,7 @@ if (isset($_GET['action'])){
 $o = get_option('make-pdf-newspaper-options');
 
 //Collect 
-if ($_GET['action'] == "rebuild"){
+if ($_GET['action'] == "Go" && $_GET['mpn_key'] == $o['mpn_key']){
 	$rebuild = true; 
 }
 
@@ -79,8 +79,17 @@ if ($get_images) {
 }
 
 // Check for feed URL
-$url = $catFeed;
-if ($url !="") $catExt = "-".$url;
+if (isset($_GET['cat'])){
+	if (intval($_GET['cat'])>0){
+		$catFeed = get_category_link( $_GET['cat'] );
+		$catFeed = str_replace(get_bloginfo( 'wpurl' ),"",$catFeed);
+	} else {
+		$catFeed = $_GET['cat'];
+	}
+	
+	$url = $catFeed;
+}
+if ($url !="") $catExt = $url;
 $catExt = str_replace("/","-",$catExt);
 $catExt = rtrim($catExt,"-");
 $ext = '/pdf/'.$o['mpn_filename'].$catExt.'.pdf';
@@ -101,7 +110,7 @@ if (file_exists($output_file)) {
 		}
 		$linkString = "<a href=\"".$pdfURL."\" target=\"_blank\" >%LINKTEXT%</a>".$previewHTML;
 } 
-if (!(file_exists($output_file)) || $rebuild) {
+if ($rebuild) {
  if($o['mpn_engine_url']!=""){
  	if ($get_images) $imageStr = "true";
  	$extURL = $o['mpn_engine_url']."?feed=".get_bloginfo( 'wpurl' ).$catFeed.urlencode("?feed=make-pdf-newspaper")."&title=".urlencode($o['mpn_title'])."&sub=".urlencode($o['mpn_subtitle'])."&order=".$order."&images=".$imageStr.$o['mpn_engine_para'];
@@ -114,9 +123,11 @@ if (!(file_exists($output_file)) || $rebuild) {
 		require_once('libraries/simplepie/simplepie.class.php');
 	require_once('SimplePie_Chronological.php');
 	// Include HTML Purifier to clean up and filter HTML input
-	require_once('libraries/htmlpurifier/library/HTMLPurifier.auto.php');
+	if(! class_exists('HTMLPurifier'))
+		require_once('libraries/htmlpurifier/library/HTMLPurifier.auto.php');
 	// Include SmartyPants to make pretty, curly quotes
-	require_once('libraries/php-typography/php-typography.php');
+	if(! class_exists('phpTypography'))
+		require_once('libraries/php-typography/php-typography.php');
 	// Include TCPDF to turn all this into a PDF
 	require_once('tcpdf_config.php');
 	require_once('libraries/tcpdf/config/lang/eng.php');
@@ -124,8 +135,10 @@ if (!(file_exists($output_file)) || $rebuild) {
 	// Include NewspaperPDF to let us add stories to our PDF easily
 	require_once('NewspaperPDF.php');
 	// Include PHP Hooks to allow plugins to extend functionality (see plugin/ folder)
-	require_once('libraries/phphooks/phphooks.class.php');
-	require_once('libraries/phphooks/functions.php');
+	if(! class_exists('phphooks')){
+		require_once('libraries/phphooks/phphooks.class.php');
+		require_once('libraries/phphooks/functions.php');
+	}
 
 	/////////////////////////////////////
 	// Initialise hooks and load plugins
@@ -135,7 +148,7 @@ if (!(file_exists($output_file)) || $rebuild) {
 	$hooks->set_hooks(array('filter_purified_html_string', 'filter_purified_html_dom', 'filter_image_elements'));
 	$hooks->load_plugins('plugins/');
 	
-	/*
+	
 	class HTMLPurifier_AttrTransform_FilterImageElements extends HTMLPurifier_AttrTransform
 	{
 		public function transform($attr, $config, $context) {
@@ -155,7 +168,7 @@ if (!(file_exists($output_file)) || $rebuild) {
 			return $attr;
 		}
 	}
-	*/
+	
 
 	////////////////////////////////
 	// Get RSS/Atom feed
@@ -296,7 +309,7 @@ if (!(file_exists($output_file)) || $rebuild) {
 		$def->info_tag_transform['h5'] = new HTMLPurifier_TagTransform_Simple('h2');
 		$def->info_tag_transform['h6'] = new HTMLPurifier_TagTransform_Simple('h2');
 		//$def->info_tag_transform['i'] = new HTMLPurifier_TagTransform_Simple('em');
-		/*
+		
 		if ($get_images) {
 			// Here we tell HTML Purifier to filter out image elements with
 			// small image dimensions (width or height smaller than 5 pixels).
@@ -310,7 +323,7 @@ if (!(file_exists($output_file)) || $rebuild) {
 			// if no src attribute is present).
 			$def->addAttribute('img', 'src*', new HTMLPurifier_AttrDef_URI());
 		}
-		*/
+		
 		$story = '';
 		$content = $item->get_content();
 		// replace double <br>s to linebreaks
@@ -364,9 +377,9 @@ if (!(file_exists($output_file)) || $rebuild) {
 		if (filesize(WP_CONTENT_DIR.$thumbName)>60)
 		$previewHTML = "<div style=\"font-size:80%; font-style:italic;\" align=\"center\"><a href=\"".$pdfURL."\" target=\"_blank\" ><img src=\"".WP_CONTENT_URL.$thumbName."\" width=\"160\" height=\"226\"/></a><br/>Preview powered by:<br/><a href=\"http://webthumb.bluga.net/\" target=\"_blank\">Bluga.net Webthumb</a></div>";
  }
- $linkString = "<a href=\"".$pdfURL."\" target=\"_blank\" >%LINKTEXT%</a>".$previewHTML;
+// $linkString = "<a href=\"".$pdfURL."\" target=\"_blank\" >%LINKTEXT%</a>".$previewHTML;
 }
-if ($_GET['action']=="test" || $_GET['action']=="rebuild"){
+if ($_GET['action']=="test" || $rebuild){
 	header('Location: '.$pdfURL);
 } 
 ?>

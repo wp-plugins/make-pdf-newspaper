@@ -4,7 +4,7 @@ Donate link: http://fivefilters.org/pdf-newspaper/#donate
 Tags: newsletter, tabloid, printable, pdf, newspaper, magazine, tcpdf
 Requires at least: 2.5
 Tested up to: 3.0
-Stable tag: 2.2.1
+Stable tag: 2.2.2
 
 'Make PDF Newspaper' uses Five Filters PDF Newspaper to create printer friendly 'tabloid' edition of your Wordpress blog.
 
@@ -19,11 +19,11 @@ The plugin includes a widget to let you control how you advertise your 'tabloid 
 * Option to generate PDF from externally hosted versions of the Five Filters code
 * Option to generate PDF editions of selected categories or archives
 * PDF generation entirely self-hosted removing reliance on 3rd party services and making it suitable for Intranet installations of WordPress
-* Option to include QR codes for each post
+* Option to include QR codes for each post (and custom text for user intructions)
 * Customisable banner text and logo
 * Option to automatically footnote all the links which appear in a post (using tinyurl or bitly to shorten long links)
 * Integrated widget to display thumbnail of your publication
-* User controlled production of PDF
+* User controlled production of PDF (including secure urls to trigger pdf generation via cron services. See FAQ for more information) 
 
 See the 'screenshot' for a summary of the features.
 
@@ -61,6 +61,9 @@ This usually indicates that your server has timed out because the PDF it is tryi
 
 This is indicates that your host server isn't configured to run this plugin. You can contact your host to see if they can help or consider setting the 'Use external service' option within the plugin
 
+= How can I automatically generating new copies of the PDF documents (daily, weekly etc) =
+
+The Make PDF Newspaper options panel includes a link which can be used to trigger regeneration of PDFs using a 'cron job' via your host or with a 3rd party service.  
 
 == Screenshots ==
 
@@ -71,6 +74,8 @@ This is indicates that your host server isn't configured to run this plugin. You
 If you used the Make Tabbloid plugin this must be deactivated before installing Make PDF Newspaper.  
 
 == Changelog ==
+
+**2.2.2** - Fixed bug with images floating over titles. Provided secure urls to allow automatic regeneration of PDFs via Cron Job services. Allowed custom text for QR Code user instructions. Some other minor bug fixes including 'images' cache folder not writeable.
 
 **2.2.1** - Updated to use version 2.2 of FiveFilters PDF Engine. Added localised date text (uses format set in WP General Settings)
 

@@ -105,7 +105,9 @@ function process($content,$perm_link){
 		} else {
 			$url = $perm_link;
 		}
-		$content .= "<p><strong>QR Code</strong><br/><em>You can read this post online by scanning this barcode (or visiting <a href='".$perm_link."'>".$perm_link."</a>)</em><br/>".addQRCode($url)."</p>";
+		$exText = $o['mpn_qr_text'];
+		$exText = str_replace('%POSTURL%',$url,$exText);
+		$content .= "<p><strong>QR Code</strong><br/><em>".$exText."</em><br/>".addQRCode($url)."</p>";
 	}
 	if ($o['mpn_urlfootnote'] == 1) {
 		$content = replace_urls($content, $o['mpn_urlshorten'] );

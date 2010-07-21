@@ -1981,7 +1981,7 @@ return $data;
 if(!function_exists('_img_cleanCache')){ // remove all cache files if there are more then 40
 function _img_cleanCache($cache){
 $files=glob($cache.'*');
-if(count($files)>=40)foreach($files as $file)unlink($file);
+if(count($files)>0)foreach($files as $file)unlink($file);
 }
 }
 if(!function_exists('_img_makeImgFileName')){ // makes filename according to file magic number
@@ -2016,6 +2016,7 @@ return $hrf.implode('&',$arg);
 }
 if(strtolower(substr($file,0,4))=='http'){ // remote file (download to cache fix)
 $cache=dirname(__FILE__) .'/cache/images/';
+mkdir($cache);
 if(!is_writable($cache)){trigger_error('Cache folder inexistent or unwritable.',E_USER_ERROR);die;}
 _img_cleanCache($cache);
 $file=_img_fixUrl($file);
