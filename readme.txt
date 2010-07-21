@@ -4,7 +4,7 @@ Donate link: http://fivefilters.org/pdf-newspaper/#donate
 Tags: newsletter, tabloid, printable, pdf, newspaper, magazine, tcpdf
 Requires at least: 2.5
 Tested up to: 3.0
-Stable tag: 2.2.2
+Stable tag: 2.2.3
 
 'Make PDF Newspaper' uses Five Filters PDF Newspaper to create printer friendly 'tabloid' edition of your Wordpress blog.
 
