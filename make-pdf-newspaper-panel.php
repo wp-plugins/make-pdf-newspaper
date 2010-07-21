@@ -1,4 +1,13 @@
-<?php if (isset($_POST['mpn_action'])) { ?>
+<?php
+if(isset($options['mpn_key'])&& $options['mpn_key']!="")  {
+	$cronPath = WP_PLUGIN_URL . '/make-pdf-newspaper/makepdf.php?mpn_key='.$options['mpn_key'];
+} else {
+	$status2 = "<strong>You will need to generate a key in the highlighted field before being able to remake pdfs</strong>"; 	
+	$status .= "<br>".$status2;
+}
+	
+
+ if (isset($_POST['mpn_action']) || $status2 !="") { ?>
 <div id="message" class="updated fade" style="background-color: rgb(255, 251, 204);">
   <p><strong><?php echo $status; ?></strong></p>
 </div>
@@ -25,9 +34,7 @@ border-right:1px dashed #cccccc;
 
 </style>
 <?php 
-if(isset($options['mpn_key'])&& $options['mpn_key']!="")  {
-	$cronPath = WP_PLUGIN_URL . '/make-pdf-newspaper/makepdf.php?mpn_key='.$options['mpn_key'];
-}
+
 
 function mpnKey(){
 $s = '<input name="mpn_key" type="hidden" value="';
@@ -182,7 +189,8 @@ function changeArc(){
           <td>If you would like to automatically remake the pdf the following url can be registered  as  a 'cron job' using your host or a third party web service:<br>
 &nbsp;&nbsp;Cron Job URL :
             <input name="mpn_cron_url" type="text" id="mpn_cron_url" onclick="select();" value="<?php echo $cronPath.'&action=Go'?>" size="60" />
-           <br />&nbsp;&nbsp;Key:<input name="mpn_key" type="text" id="mpn_key" value="<?php echo $options['mpn_key']; ?>" size="60"> [<a href="javascript:void(0);" onclick="document.mpn_form.mpn_key.value=randKey(32)">Generate new key</a>] </td>
+           <br />&nbsp;&nbsp;Key:<input name="mpn_key" type="text" id="mpn_key" value="<?php echo $options['mpn_key']; ?>" size="60"> 
+           <?php echo $status2;?> [<a href="javascript:void(0);" onclick="document.mpn_form.mpn_key.value=randKey(32)">Generate new key</a>] </td>
         </tr>
         <tr>
           <th scope="row"></th>
