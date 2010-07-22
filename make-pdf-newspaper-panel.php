@@ -82,7 +82,7 @@ function changeArc(){
         </tr>
         <tr>
           <th scope="row">Security Key</th>
-          <td align="left"><input name="mpn_key2" type="text" id="mpn_key2" value="<?php echo $options['mpn_key']; ?>" size="60" />
+          <td align="left"><input name="mpn_key" type="text" id="mpn_key" value="<?php echo $options['mpn_key']; ?>" size="60" />
           <?php echo $status2;?> [<a href="javascript:void(0);" onclick="document.mpn_form.mpn_key.value=randKey(32)">Generate new key</a>] <br />
           You should keep this security key secret. The key is required to prevent unauthorised remaking of PDFs.</td>
         </tr>
