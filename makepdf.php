@@ -92,6 +92,8 @@ if (isset($_GET['cat'])){
 if ($url !="") $catExt = $url;
 $catExt = str_replace("/","-",$catExt);
 $catExt = rtrim($catExt,"-");
+$catExt = str_replace("?","-",$catExt);
+$catExt = str_replace("=","-",$catExt);
 $ext = '/pdf/'.$o['mpn_filename'].$catExt.'.pdf';
 $thumbName= '/pdf/'.$o['mpn_filename'].$catExt.'.jpg';
 $output_file = WP_CONTENT_DIR.$ext;
@@ -178,7 +180,7 @@ if ($rebuild) {
 	} else {
 		$feed = new SimplePie();
 	}
-	$feed->set_feed_url(get_bloginfo( 'wpurl' ).$url.'?feed=make-pdf-newspaper');
+	$feed->set_feed_url(get_bloginfo( 'wpurl' ).$url.(strstr($url,'?')?'&':'?').'feed=make-pdf-newspaper');
 	$feed->set_timeout(360);
 	$feed->enable_cache(false);
 	$feed->set_stupidly_fast(false);

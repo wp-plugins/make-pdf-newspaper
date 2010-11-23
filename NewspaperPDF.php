@@ -2016,15 +2016,16 @@ return $hrf.implode('&',$arg);
 }
 if(strtolower(substr($file,0,4))=='http'){ // remote file (download to cache fix)
 $cache=dirname(__FILE__) .'/cache/images/';
-mkdir($cache);
+if (!is_dir($cache)) mkdir($cache);
 if(!is_writable($cache)){trigger_error('Cache folder inexistent or unwritable.',E_USER_ERROR);die;}
 _img_cleanCache($cache);
 $file=_img_fixUrl($file);
 
 $data=_img_httpGet($file);
-if($data==''){trigger_error('Remote source didn\'t return any data.',E_USER_ERROR);die;}
-$file=$cache._img_makeImgFileName($data);
-file_put_contents($file,$data);
+if($data!=''){
+	$file=$cache._img_makeImgFileName($data);
+	file_put_contents($file,$data);
+}
 }/*else{ // local file (correct path fix)
 $cns='libraries/tcpdf//';
 $pos=strpos($file,$cns)+strlen($cns);

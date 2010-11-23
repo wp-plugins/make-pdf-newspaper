@@ -4,7 +4,7 @@ Donate link: http://fivefilters.org/pdf-newspaper/#donate
 Tags: newsletter, tabloid, printable, pdf, newspaper, magazine, tcpdf
 Requires at least: 2.5
 Tested up to: 3.0
-Stable tag: 2.2.3
+Stable tag: 2.2.4
 'Make PDF Newspaper' uses Five Filters PDF Newspaper to create printer friendly 'tabloid' edition of your Wordpress blog.
 
 == Description ==
@@ -75,6 +75,8 @@ If you are upgrading from v2.2.1 or earlier you will need to generate a random s
 If you used the Make Tabbloid plugin this must be deactivated before installing Make PDF Newspaper.  
 
 == Changelog ==
+
+**2.2.4** - Bugfixes (mainly provided by mgnbrunty http://wordpress.org/support/topic/plugin-make-pdf-newspaper-bug-with-categories-i-ncludes-afix)
 
 **2.2.3** - Improved position and instructions for 'secret key', which is required to prevent malicious creation of pdfs 
 
