@@ -5,7 +5,7 @@ Plugin URI: http://www.rsc-ne-scotland.org.uk/mashe/wordpress-plugins/make-tabbl
 Description: This plugin uses the FiveFilters.org RSS to PDF Newspaper engine to create printer friendly 'tabloid' edition of your latest posts. You can add a link to your &quot;Tabloid&quot edition as a widget.  
 Author: Martin Hawksey
 Author URI: http://www.rsc-ne-scotland.org.uk/mashe
-Version: 2.2.3
+Version: 2.2.4
 */
 
 
